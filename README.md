@@ -1,5 +1,5 @@
 # Quick Start
 ```bash 
-$ go install github.com/limitcool/clashc/@latest
+$ go install github.com/limitcool/clashc@latest
 $ ./clashc
 ```
