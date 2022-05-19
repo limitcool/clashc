@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"runtime"
 	"strings"
+	"sync"
 
 	"gopkg.in/yaml.v2"
 )
@@ -16,6 +17,7 @@ import (
 const Version = "0.0.1"
 
 var (
+	wg            sync.WaitGroup
 	proxyName     string
 	proxiesName   string
 	Config        Clash
@@ -26,14 +28,14 @@ var (
 )
 
 type Clash struct {
-	ExternalController string `yaml:"external-controller"`
-	port               int    `yaml:"port"`
-	socksPort          int    `yaml:"socks-port"`
-	allowLan           bool   `yaml:"allow-lan"`
-	mode               string `yaml:"mode"`
-	logLevel           string `yaml:"log-level"`
-	// proxies            []string     `yaml:"proxies"`
-	ProxyGroups []ProxyGroup `yaml:"proxy-groups"`
+	ExternalController string       `yaml:"external-controller"`
+	port               int          `yaml:"port"`
+	socksPort          int          `yaml:"socks-port"`
+	allowLan           bool         `yaml:"allow-lan"`
+	mode               string       `yaml:"mode"`
+	logLevel           string       `yaml:"log-level"`
+	Proxies            []Proxies    `yaml:"proxies"`
+	ProxyGroups        []ProxyGroup `yaml:"proxy-groups"`
 	// Rules       []string     `yaml:"rules"`
 }
 
@@ -44,6 +46,11 @@ type ProxyGroup struct {
 	Interval  int      `yaml:"interval"`
 	Tolerance int      `yaml:"tolerance"`
 	Proxies   []string `yaml:"proxies"`
+}
+type Proxies struct {
+	Name   string `json:"name"`
+	Server string `json:"server"`
+	Port   int    `json:"port"`
 }
 
 func main() {
@@ -151,3 +158,16 @@ func GetProxyName() string {
 	log.Println(Config.ProxyGroups[ProxiesNum-1].Proxies[ProxyNum-1])
 	return Config.ProxyGroups[ProxiesNum-1].Proxies[ProxyNum-1]
 }
+
+// func UrlTest() {
+// 	wg.Add(len(Config.ProxyGroups))
+// 	for _, v := range Config.Proxies {
+// 		defer wg.Done()
+// 		log.Println(v.Name)
+// 	}
+// 	wg.Wait()
+// }
+
+// func Ping(urlStr string, port int) bool {
+
+// }
