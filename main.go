@@ -7,18 +7,22 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"runtime"
 	"strings"
 
 	"gopkg.in/yaml.v2"
 )
 
+const Version = "0.0.1"
+
 var (
-	proxyName   string
-	proxiesName string
-	Config      Clash
-	err         error
-	ProxiesNum  int
-	ProxyNum    int
+	proxyName     string
+	proxiesName   string
+	Config        Clash
+	err           error
+	ProxiesNum    int
+	ProxyNum      int
+	winConfigPath string
 )
 
 type Clash struct {
@@ -43,9 +47,17 @@ type ProxyGroup struct {
 }
 
 func main() {
-
-	Config, err = UnmarshalYaml("/root/.config/clash/config.yaml")
-	// Config, err = UnmarshalYaml("C:\\Users\\Andorid\\.config\\clash\\profiles\\1649774903663.yml")
+	fmt.Println("当前使用的版本为:", Version, "✔️")
+	switch runtime.GOOS {
+	case "windows":
+		fmt.Println("windows平台,请指定config.yaml文件绝对路径")
+		fmt.Println("示例: C:\\Users\\Andorid\\.config\\clash\\profiles\\1649774903663.yml")
+		fmt.Scanln(&winConfigPath)
+		// 去除引号
+		Config, err = UnmarshalYaml(strings.Replace(winConfigPath, "\"", "", -1))
+	case "linux":
+		Config, err = UnmarshalYaml("/root/.config/clash/config.yaml")
+	}
 	if err != nil {
 		log.Println(err)
 		return
